@@ -1,0 +1,19 @@
+{
+  "name": "ebo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Vadimhtml/ebo.git"
+  },
+  "author": "Vadim Glushkov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vadimhtml/ebo/issues"
+  },
+  "homepage": "https://github.com/Vadimhtml/ebo#readme"
+}
