@@ -5,6 +5,7 @@
 process.stdout.write("\x1Bc");
 
 // Модули
+const fs = require("fs-extra");
 const swig = require("swig");
 const inquirer = require("inquirer");
 const _ = require("lodash");
@@ -46,27 +47,52 @@ inquirer.prompt(questions).then(answers => {
         answers: answers
     };
 
-    // Перебираем сценарии
-    scripts.forEach((currentScript) => {
-        const currentCondition = currentScript.condition ? swig.compile(currentScript.condition)(data) : true; // Проверяем и шаблонизируем условия обработки сценария
-        if (eval(currentCondition)) {
-            const currentTemplateFilename = swig.compile(currentScript.src)(data); // Имя файла текущего шаблона
-            const currentTemplate = swig.compileFile(currentTemplateFilename)(data); // Текущий шаблон
-            const currentDestinationFileName = swig.compile(currentScript.dest)(data); // Имя файла назначения
+    const checkMessages = []; // Список сообщений после проверки сценариев
 
-            if (currentScript.action === "file") { // Тут надо создать файл
-                console.log("file");
-                console.log(currentTemplate);
-                console.log(currentDestinationFileName);
+    // Перебираем сценарии, два раза, первый прогон на проверки
+    [true, false].forEach((isCheck) => {
+        scripts.forEach((currentScript) => {
+            const currentCondition = currentScript.condition ? swig.compile(currentScript.condition)(data) : true; // Проверяем и шаблонизируем условия обработки сценария
+            if (eval(currentCondition)) {
+
+                // Эти конструкции и наличие всего необходимого проверятся движком js
+                const currentTemplateFilename = swig.compile(currentScript.src)(data); // Имя файла текущего шаблона
+                const currentTemplate = swig.compileFile(currentTemplateFilename)(data); // Текущий шаблон
+                const currentDestinationFileName = swig.compile(currentScript.dest)(data); // Имя файла назначения
+
+                if (currentScript.action === "new") {
+                    if (isCheck) {
+                        if (fs.pathExistsSync(currentDestinationFileName)) {
+                            checkMessages.push(`File ${currentDestinationFileName} already exist`);
+                        }
+                    } else {
+                        fs.outputFileSync(currentDestinationFileName, currentTemplate);
+                        console.log("new: ", currentDestinationFileName);
+                    }
+                }
+
+                if (currentScript.action === "inject") {
+                    if (isCheck) {
+                        if (!fs.pathExistsSync(currentDestinationFileName)) {
+                            checkMessages.push(`File ${currentDestinationFileName} does not exist`);
+                        }
+                        if ((currentScript.place === "after" || currentScript.place === "before") && !currentScript.hasOwnProperty("expression")) { // Если в скрипте нет ключа с выражением
+                            checkMessages.push({"Expression key required in ": currentScript});
+                        }
+                    } else {
+                        if (currentScript.place === "after" || currentScript.place === "before") {
+                            const currentExpression = swig.compile(currentScript.expression)(data); // Текущее выражение для инжекта
+                            console.log(currentExpression);
+                        } else if (currentScript.place === "append" || currentScript.place === "prepend") {
+                            console.log('2');
+                        }
+                    }
+                }
             }
-            if (currentScript.action === "before") {
-                console.log("before");
-                // Тут надо вставить шаблон до
-            }
-            if (currentScript.action === "after") {
-                console.log("after");
-                // Тут надо вставить шаблон после
-            }
+        });
+
+        if (0 < checkMessages.length) { // Если столкнулись с ошибками при первом прогоне
+            throw new Error(JSON.stringify(checkMessages, null, 2));
         }
     });
 });
