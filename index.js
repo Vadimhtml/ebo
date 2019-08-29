@@ -6,7 +6,7 @@ process.stdout.write("\x1Bc");
 
 // Модули
 const fs = require("fs-extra");
-const swig = require("swig");
+const twig = require("twig").twig;
 const inquirer = require("inquirer");
 const _ = require("lodash");
 
@@ -52,13 +52,14 @@ inquirer.prompt(questions).then(answers => {
     // Перебираем сценарии, два раза, первый прогон на проверки
     [true, false].forEach((isCheck) => {
         scripts.forEach((currentScript) => {
-            const currentCondition = currentScript.condition ? swig.compile(currentScript.condition)(data) : true; // Проверяем и шаблонизируем условия обработки сценария
-            if (eval(currentCondition)) {
+            const currentCondition = currentScript.condition ? twig({data: currentScript.condition}).render(data) : true; // Проверяем и шаблонизируем условия обработки сценария
 
+            if (eval(currentCondition)) {
                 // Эти конструкции и наличие всего необходимого проверятся движком js
-                const currentTemplateFilename = swig.compile(currentScript.src)(data); // Имя файла текущего шаблона
-                const currentTemplate = swig.compileFile(currentTemplateFilename)(data); // Текущий шаблон
-                const currentDestinationFileName = swig.compile(currentScript.dest)(data); // Имя файла назначения
+                const currentTemplateFilename = twig({data: currentScript.src}).render(data); // Имя файла текущего шаблона
+                const currentTemplateFile = fs.readFileSync(currentTemplateFilename, "utf8"); // Не обработанный шаблон
+                const currentTemplate = twig({data: currentTemplateFile}).render(data); // Текущий шаблон
+                const currentDestinationFileName = twig({data: currentScript.dest}).render(data); // Имя файла назначения
 
                 if (currentScript.action === "new") {
                     if (isCheck) {
@@ -81,7 +82,7 @@ inquirer.prompt(questions).then(answers => {
                         }
                     } else {
                         if (currentScript.place === "after" || currentScript.place === "before") {
-                            const currentExpression = swig.compile(currentScript.expression)(data); // Текущее выражение для инжекта
+                            const currentExpression = twig({data: currentScript.expression}).render(data); // Текущее выражение для инжекта
                             let currentDestinationFile = fs.readFileSync(currentDestinationFileName, "utf8");
                             if (currentScript.place === "after") {
                                 currentDestinationFile = currentDestinationFile.replace(currentExpression, currentExpression + currentTemplate);
