@@ -66,7 +66,7 @@ inquirer.prompt(questions).then(answers => {
                             checkMessages.push(`File ${currentDestinationFileName} already exist`);
                         }
                     } else {
-                        fs.outputFileSync(currentDestinationFileName, currentTemplate);
+                        fs.outputFileSync(currentDestinationFileName, currentTemplate, "utf8");
                         console.log("new: ", currentDestinationFileName);
                     }
                 }
@@ -82,9 +82,25 @@ inquirer.prompt(questions).then(answers => {
                     } else {
                         if (currentScript.place === "after" || currentScript.place === "before") {
                             const currentExpression = swig.compile(currentScript.expression)(data); // Текущее выражение для инжекта
-                            console.log(currentExpression);
+                            let currentDestinationFile = fs.readFileSync(currentDestinationFileName, "utf8");
+                            if (currentScript.place === "after") {
+                                currentDestinationFile = currentDestinationFile.replace(currentExpression, currentExpression + currentTemplate);
+                            }
+                            if (currentScript.place === "before") {
+                                currentDestinationFile = currentDestinationFile.replace(currentExpression, currentTemplate + currentExpression);
+                            }
+                            fs.outputFileSync(currentDestinationFileName, currentDestinationFile, "utf8");
+                            console.log("inject: ", currentTemplate.trim());
                         } else if (currentScript.place === "append" || currentScript.place === "prepend") {
-                            console.log('2');
+                            let currentDestinationFile = fs.readFileSync(currentDestinationFileName, "utf8");
+                            if (currentScript.place === "append") {
+                                currentDestinationFile = currentDestinationFile + currentTemplate;
+                            }
+                            if (currentScript.place === "prepend") {
+                                currentDestinationFile = currentTemplate + currentDestinationFile;
+                            }
+                            fs.outputFileSync(currentDestinationFileName, currentDestinationFile, "utf8");
+                            console.log("inject: ", currentTemplate.trim());
                         }
                     }
                 }
