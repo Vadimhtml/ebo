@@ -1,5 +1,6 @@
 .idea/
 .ebo/
+example/
 node_modules/
 package-lock.json
 .gitignore

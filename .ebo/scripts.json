@@ -1,0 +1,22 @@
+[
+  {
+    "action": "new",
+    "src": "./.ebo/component.js.twig",
+    "dest": "./example/scripts/make_{{answers.hierarchy.lower}}-{{answers.name.camel}}_{{answers.template.lower}}.js"
+  },
+  {
+    "action": "inject",
+    "place": "after",
+    "expression": "//common",
+    "src": "./.ebo/require.js.twig",
+    "dest": "./example/main.js"
+  },
+  {
+    "condition": "answers.template === 'js'",
+    "action": "inject",
+    "place": "after",
+    "expression": "//common",
+    "src": "./.ebo/require.js.twig",
+    "dest": "./example/main.js"
+  }
+]
