@@ -73,7 +73,7 @@ inquirer.prompt(questions).then(answers => {
                         }
                     } else {
                         fs.outputFileSync(currentDestinationFileName, currentTemplate, "utf8");
-                        console.log("new: ", currentDestinationFileName);
+                        console.log(`new\t->\t${currentDestinationFileName}`);
                     }
                 }
 
@@ -96,7 +96,7 @@ inquirer.prompt(questions).then(answers => {
                                 currentDestinationFile = currentDestinationFile.replace(currentExpression, currentTemplate + currentExpression);
                             }
                             fs.outputFileSync(currentDestinationFileName, currentDestinationFile, "utf8");
-                            console.log("inject: ", currentTemplate.trim());
+                            console.log(`inject\t->\t${currentDestinationFileName}`);
                         } else if (currentScript.place === "append" || currentScript.place === "prepend") {
                             let currentDestinationFile = fs.readFileSync(currentDestinationFileName, "utf8");
                             if (currentScript.place === "append") {
@@ -106,7 +106,7 @@ inquirer.prompt(questions).then(answers => {
                                 currentDestinationFile = currentTemplate + currentDestinationFile;
                             }
                             fs.outputFileSync(currentDestinationFileName, currentDestinationFile, "utf8");
-                            console.log("inject: ", currentTemplate.trim());
+                            console.log(`inject\t->\t${currentDestinationFileName}`);
                         }
                     }
                 }
