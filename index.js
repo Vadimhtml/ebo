@@ -5,6 +5,7 @@
 process.stdout.write("\x1Bc");
 
 // Модули
+/** @type Object */
 const fs = require("fs-extra");
 const twig = require("twig").twig;
 const inquirer = require("inquirer");
@@ -51,6 +52,10 @@ inquirer.prompt(questions).then(answers => {
 
     // Перебираем сценарии, два раза, первый прогон на проверки
     [true, false].forEach((isCheck) => {
+
+        /**
+         * @param {{action:string, src:string, dest:string, place:string, expression:string, condition:string}} currentScript
+         */
         scripts.forEach((currentScript) => {
             const currentCondition = currentScript.condition ? twig({data: currentScript.condition}).render(data) : true; // Проверяем и шаблонизируем условия обработки сценария
 
