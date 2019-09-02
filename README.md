@@ -86,3 +86,7 @@ More information: https://www.npmjs.com/package/inquirer
 console.log("{{answers.hierarchy.lower}}", "{{answers.name.camel}}");
 ```
 More information: https://www.npmjs.com/package/swig
+
+---
+#### Run ebo
+`ebo`
