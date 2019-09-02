@@ -1,12 +1,17 @@
 {
   "name": "ebo",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/Vadimhtml/ebo.git"
   },
+  "keywords": [
+    "deployment",
+    "template",
+    "boilerplate"
+  ],
   "author": "Vadim Glushkov",
   "license": "ISC",
   "bugs": {
