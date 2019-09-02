@@ -81,8 +81,8 @@ inquirer.prompt(questions).then(answers => {
                 if (currentScript.action === "inject") {
                     const injectTemplate = currentSrc; // Шаблон для инъекции
                     if (isCheck) {
-                        if (!fs.pathExistsSync(currentSrc)) {
-                            checkMessages.push(`File ${currentSrc} does not exist`);
+                        if (!fs.pathExistsSync(currentDest)) {
+                            checkMessages.push(`File ${currentDest} does not exist`);
                         }
                         if ((currentScript.place === "after" || currentScript.place === "before") && !currentScript.hasOwnProperty("expression")) { // Если в скрипте нет ключа с выражением
                             checkMessages.push({"Expression key required in ": currentScript});
