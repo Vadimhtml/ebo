@@ -29,14 +29,26 @@ const cases = (value) => {
 
 // Рабочие константы
 const cwd = process.cwd();
+const configPath = cwd + "/.ebo/";
+const questionsJsPath = configPath + "questions.js";
+const questionsJsonPath = configPath + "questions.json";
 
 // Грузим вопросы
 /** @type Object */
-const questions = require(cwd + "/.ebo/questions.json");
+let questions;
+try {
+    questions = require(questionsJsPath);
+} catch (jsError) {
+    try {
+        questions = require(questionsJsonPath);
+    } catch (jsonError) {
+        throw jsError;
+    }
+}
 
 // Грузим сценарии
 /** @type Array */
-const scripts = require(cwd + "/.ebo/scripts.json");
+const scripts = require(configPath + "scripts.json");
 
 
 // Начинваем опрос
