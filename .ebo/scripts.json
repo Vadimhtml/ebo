@@ -1,22 +1,22 @@
 [
   {
+    "condition": "answers.scenario.given === 'Component'",
     "action": "new",
     "src": "./.ebo/component.js.twig",
-    "dest": "./example/scripts/make_{{answers.hierarchy.lower}}-{{answers.name.camel}}_{{answers.template.lower}}.js"
+    "dest": "./example/component/{{answers.hierarchy.lower}}/{{answers.name.camel}}.js"
   },
   {
-    "action": "inject",
-    "place": "after",
-    "expression": "//common",
-    "src": "./.ebo/require.js.twig",
-    "dest": "./example/main.js"
+    "condition": "answers.scenario.given === 'Markup'",
+    "action": "new",
+    "src": "./.ebo/markup.html.twig",
+    "dest": "./example/markup/{{answers.type.lower}}/{{answers.name.camel}}.html"
   },
   {
-    "condition": "answers.template === 'js'",
+    "condition": "answers.scenario.given === 'Component'",
     "action": "inject",
-    "place": "after",
-    "expression": "//common",
-    "src": "./.ebo/require.js.twig",
+    "expression": "//@ebo inject {{answers.hierarchy.lower}}",
+    "place": "before",
+    "src": "const {{answers.hierarchy.lower}}{{answers.name.firstCamel}} = require('./component/{{answers.hierarchy.lower}}/{{answers.name.camel}}');\n",
     "dest": "./example/main.js"
   }
 ]

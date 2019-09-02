@@ -1,5 +1,5 @@
 "use strict";
 
-//common
+//@ebo inject organism
 
-//js
+//@ebo inject group

@@ -4,37 +4,31 @@ const questions = [
     {
         "type": "list",
         "name": "scenario",
-        "message": "Scenario: ",
+        "message": "Scenario:",
         "choices": ["Component", "Markup"]
     },
     {
         "type": "list",
-        "name": "a",
-        "message": "AAA: ",
+        "name": "hierarchy",
+        "message": "Atomic hierarchy:",
         "choices": ["Organism", "Group"],
+        "when": (e) => {
+            return e["scenario"] === "Component"
+        }
+    },
+    {
+        "type": "list",
+        "name": "type",
+        "message": "Markup type: ",
+        "choices": ["Page", "Popup"],
         "when": (e) => {
             return e["scenario"] === "Markup"
         }
     },
     {
-        "type": "list",
-        "name": "b",
-        "message": "BBB: ",
-        "choices": ["Page", "Popup"],
-        "when": false
-    },
-    {
         "type": "input",
         "name": "name",
-        "message": "Component name with spaces: ",
-        "when": false
-    },
-    {
-        "type": "list",
-        "name": "template",
-        "message": "Create templates: ",
-        "choices": ["all", "js", "styl"],
-        "when": false
+        "message": "Name with spaces:"
     }
 ];
 
