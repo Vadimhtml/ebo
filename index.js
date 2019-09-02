@@ -27,13 +27,16 @@ const cases = (value) => {
     };
 };
 
+// Рабочие константы
+const cwd = process.cwd();
+
 // Грузим вопросы
 /** @type Object */
-const questions = require("./.ebo/questions.json");
+const questions = require(cwd + "/.ebo/questions.json");
 
 // Грузим сценарии
 /** @type Array */
-const scripts = require("./.ebo/scripts.json");
+const scripts = require(cwd + "./.ebo/scripts.json");
 
 
 // Начинваем опрос
