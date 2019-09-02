@@ -60,30 +60,29 @@ inquirer.prompt(questions).then(answers => {
          * @param {{action:string, src:string, dest:string, place:string, expression:string, condition:string}} currentScript
          */
         scripts.forEach((currentScript) => {
-            const currentCondition = currentScript.condition ? twig({data: currentScript.condition}).render(data) : true; // Проверяем и шаблонизируем условия обработки сценария
-
+            const currentCondition = currentScript.hasOwnProperty("condition") ? twig({data: currentScript.condition}).render(data) : true; // Проверяем и шаблонизируем условия обработки сценария
             if (eval(currentCondition)) {
-                // Эти конструкции и наличие всего необходимого проверятся движком js
-                const currentTemplateFilename = twig({data: currentScript.src}).render(data); // Имя файла текущего шаблона
-                const currentTemplateFile = fs.readFileSync(currentTemplateFilename, "utf8"); // Не обработанный шаблон
-                const currentTemplate = twig({data: currentTemplateFile}).render(data); // Текущий шаблон
-                const currentDestinationFileName = twig({data: currentScript.dest}).render(data); // Имя файла назначения
+
+                const currentSrc = twig({data: currentScript.src}).render(data); // Отшаблонизированный текущий источник
+                const currentDest = twig({data: currentScript.dest}).render(data); // Имя файла назначения
 
                 if (currentScript.action === "new") {
+                    const newTemplate = twig({data: fs.readFileSync(currentSrc, "utf8")}).render(data); // Новый шаблон
                     if (isCheck) {
-                        if (fs.pathExistsSync(currentDestinationFileName)) {
-                            checkMessages.push(`File ${currentDestinationFileName} already exist`);
+                        if (fs.pathExistsSync(currentDest)) {
+                            checkMessages.push(`File ${currentDest} already exist`);
                         }
                     } else {
-                        fs.outputFileSync(currentDestinationFileName, currentTemplate, "utf8");
-                        console.log(`new\t->\t${currentDestinationFileName}`);
+                        fs.outputFileSync(currentDest, newTemplate, "utf8");
+                        console.log(`new\t->\t${currentDest}`);
                     }
                 }
 
                 if (currentScript.action === "inject") {
+                    const injectTemplate = currentSrc; // Шаблон для инъекции
                     if (isCheck) {
-                        if (!fs.pathExistsSync(currentDestinationFileName)) {
-                            checkMessages.push(`File ${currentDestinationFileName} does not exist`);
+                        if (!fs.pathExistsSync(currentSrc)) {
+                            checkMessages.push(`File ${currentSrc} does not exist`);
                         }
                         if ((currentScript.place === "after" || currentScript.place === "before") && !currentScript.hasOwnProperty("expression")) { // Если в скрипте нет ключа с выражением
                             checkMessages.push({"Expression key required in ": currentScript});
@@ -91,28 +90,19 @@ inquirer.prompt(questions).then(answers => {
                     } else {
                         if (currentScript.place === "after" || currentScript.place === "before") {
                             const currentExpression = twig({data: currentScript.expression}).render(data); // Текущее выражение для инжекта
-                            let currentDestinationFile = fs.readFileSync(currentDestinationFileName, "utf8");
+                            let currentDestinationFile = fs.readFileSync(currentDest, "utf8");
                             if (currentScript.place === "after") {
-                                currentDestinationFile = currentDestinationFile.replace(currentExpression, currentExpression + currentTemplate);
+                                currentDestinationFile = currentDestinationFile.replace(currentExpression, currentExpression + injectTemplate);
                             }
                             if (currentScript.place === "before") {
-                                currentDestinationFile = currentDestinationFile.replace(currentExpression, currentTemplate + currentExpression);
+                                currentDestinationFile = currentDestinationFile.replace(currentExpression, injectTemplate + currentExpression);
                             }
-                            fs.outputFileSync(currentDestinationFileName, currentDestinationFile, "utf8");
-                            console.log(`inject\t->\t${currentDestinationFileName}`);
-                        } else if (currentScript.place === "append" || currentScript.place === "prepend") {
-                            let currentDestinationFile = fs.readFileSync(currentDestinationFileName, "utf8");
-                            if (currentScript.place === "append") {
-                                currentDestinationFile = currentDestinationFile + currentTemplate;
-                            }
-                            if (currentScript.place === "prepend") {
-                                currentDestinationFile = currentTemplate + currentDestinationFile;
-                            }
-                            fs.outputFileSync(currentDestinationFileName, currentDestinationFile, "utf8");
-                            console.log(`inject\t->\t${currentDestinationFileName}`);
+                            fs.outputFileSync(currentDest, currentDestinationFile, "utf8");
+                            console.log(`inject\t->\t${currentDest}`);
                         }
                     }
                 }
+
             }
         });
 
