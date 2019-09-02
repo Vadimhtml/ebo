@@ -36,7 +36,7 @@ const questions = require(cwd + "/.ebo/questions.json");
 
 // Грузим сценарии
 /** @type Array */
-const scripts = require(cwd + "./.ebo/scripts.json");
+const scripts = require(cwd + "/.ebo/scripts.json");
 
 
 // Начинваем опрос
